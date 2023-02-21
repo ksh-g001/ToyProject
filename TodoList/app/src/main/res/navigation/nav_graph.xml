@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mypageFragment">
+    app:startDestination="@id/mainFragment">
     <fragment
         android:id="@+id/mypageFragment"
         android:name="com.toyproject.todolist.fragment.mypageFragment"
@@ -63,5 +63,26 @@
         <action
             android:id="@+id/action_optionFragment_to_calendarFragment"
             app:destination="@id/calendarFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.toyproject.todolist.fragment.mainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_mypageFragment"
+            app:destination="@id/mypageFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_signupFragment"
+            app:destination="@id/signupFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signupFragment"
+        android:name="com.toyproject.todolist.fragment.signupFragment"
+        android:label="fragment_signup"
+        tools:layout="@layout/fragment_signup" >
+        <action
+            android:id="@+id/action_signupFragment_to_mypageFragment"
+            app:destination="@id/mypageFragment" />
     </fragment>
 </navigation>
