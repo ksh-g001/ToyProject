@@ -36,7 +36,7 @@ class mainFragment : Fragment(), View.OnClickListener {
         super.onStart()
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            refreshFragment(this, getFragmentManager())
+            navController.navigate(R.id.action_mainFragment_to_mypageFragment)
         }
     }
 
@@ -69,30 +69,18 @@ class mainFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun login(email: Editable, passward: Editable) {
+    private fun login(email: Editable, password: Editable) {
         val em = email.toString()
-        val pwd = passward.toString()
+        val pwd = password.toString()
 
         auth?.signInWithEmailAndPassword(em, pwd)
-            ?.addOnCompleteListener { task ->
+            ?.addOnCompleteListener{ task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(
-                        activity,
-                        resources.getString(R.string.sign_in_false),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(activity, resources.getString(R.string.sign_in_false), Toast.LENGTH_SHORT).show()
                     navController.navigate(R.id.action_mainFragment_to_mypageFragment)
                 } else {
-                    Toast.makeText(
-                        activity,
-                        resources.getString(R.string.sign_in_success),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(activity, resources.getString(R.string.sign_in_success), Toast.LENGTH_SHORT).show()
                 }
             }
     }
-}
-fun refreshFragment(fragment: Fragment, fragmentManager: FragmentManager?) {
-    var ft: FragmentTransaction = fragmentManager!!.beginTransaction()
-    ft.detach(fragment).attach(fragment).commit()
 }
