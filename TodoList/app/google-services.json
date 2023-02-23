@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "262296646450-2tlunums79d47hd2e6gqj56rjupf0gd2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.toyproject.todolist",
+            "certificate_hash": "0474f46a3b530a6de19ec40b47c3843feeff9ff8"
+          }
+        },
+        {
           "client_id": "262296646450-lst399s14bllsj9oqtpl9hqfap6bvnrd.apps.googleusercontent.com",
           "client_type": 3
         }

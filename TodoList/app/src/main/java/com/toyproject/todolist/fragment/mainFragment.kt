@@ -7,8 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
+import androidx.core.os.bundleOf
 import com.toyproject.todolist.R
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -36,6 +35,7 @@ class mainFragment : Fragment(), View.OnClickListener {
         super.onStart()
         val currentUser = auth.currentUser
         if (currentUser != null) {
+            Toast.makeText(activity, "현재 계정 : ${currentUser.email.toString()}", Toast.LENGTH_SHORT).show()
             navController.navigate(R.id.action_mainFragment_to_mypageFragment)
         }
     }

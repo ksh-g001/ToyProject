@@ -36,7 +36,6 @@
         android:padding="10dp"
         android:text="다크모드 전환"
         android:textSize="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top_bar"
         app:layout_constraintVertical_bias="0.0" />
@@ -55,10 +54,21 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
+        android:id="@+id/logout_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/regular"
+        android:padding="10dp"
+        android:text="로그아웃"
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/copyright"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
         android:id="@+id/copyright_string"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="272dp"
         android:fontFamily="@font/regular"
         android:padding="10dp"
         android:text="@string/copyright"
@@ -66,8 +76,9 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/copyright"
+        app:layout_constraintTop_toBottomOf="@+id/logout_btn"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView

@@ -5,9 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.toyproject.todolist.R
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_mypage.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -20,7 +24,21 @@ import java.time.format.DateTimeFormatter
 class mypageFragment : Fragment(), View.OnClickListener {
 
     lateinit var navController: NavController
+    private lateinit var auth: FirebaseAuth
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        auth = Firebase.auth
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            Toast.makeText(activity, "계정연결 실패", Toast.LENGTH_SHORT).show()
+            navController.navigate(R.id.action_mypageFragment_to_mainFragment)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
