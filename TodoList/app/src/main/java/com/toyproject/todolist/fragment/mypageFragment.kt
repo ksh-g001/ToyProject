@@ -11,6 +11,9 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_mypage.*
 import java.time.LocalDateTime
@@ -23,21 +26,21 @@ import java.time.format.DateTimeFormatter
  */
 class mypageFragment : Fragment(), View.OnClickListener {
 
-    lateinit var navController: NavController
-    private lateinit var auth: FirebaseAuth
+    private lateinit var navController: NavController
+    private lateinit var database : FirebaseDatabase
+    private lateinit var databaseReference: DatabaseReference
+    private lateinit var sKey : String
+    private lateinit var auth :FirebaseAuth
+    private lateinit var date : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
-    }
-
-    override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            Toast.makeText(activity, "계정연결 실패", Toast.LENGTH_SHORT).show()
-            navController.navigate(R.id.action_mypageFragment_to_mainFragment)
-        }
+        FirebaseDatabase.getInstance()
+        database = Firebase.database("https://todo-list-e6634-default-rtdb.asia-southeast1.firebasedatabase.app/")
+        sKey = auth.currentUser!!.uid
+        date = setDate()
+        databaseReference = database.reference.child("Users")
     }
 
     override fun onCreateView(
@@ -51,7 +54,7 @@ class mypageFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        today_date.text = setDate()
+        today_date.text = date
 
         navController = Navigation.findNavController(view)
 
@@ -65,12 +68,13 @@ class mypageFragment : Fragment(), View.OnClickListener {
             R.id.option_btn -> {navController.navigate(R.id.action_mypageFragment_to_optionFragment)}
             R.id.add_btn -> {navController.navigate(R.id.action_mypageFragment_to_writeFragment)}
             R.id.calendar_btn -> {navController.navigate(R.id.action_mypageFragment_to_calendarFragment)}
+
         }
     }
 
-    private fun setDate() : String? {
+    private fun setDate() : String {
         val today = LocalDateTime.now()
-        val SDF = DateTimeFormatter.ofPattern("yyyy.MM.dd")
-        return today.format(SDF)
+        val sdf = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return today.format(sdf)
     }
 }

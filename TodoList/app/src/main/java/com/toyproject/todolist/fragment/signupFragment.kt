@@ -19,20 +19,15 @@ import kotlinx.android.synthetic.main.fragment_signup.email
 import kotlinx.android.synthetic.main.fragment_signup.password
 import kotlinx.android.synthetic.main.fragment_signup.signup_btn
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [signupFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class signupFragment : Fragment(), View.OnClickListener {
 
     lateinit var navController: NavController
     private lateinit var auth: FirebaseAuth
+
+    override fun onStart() {
+        super.onStart()
+        auth = Firebase.auth
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,17 +50,15 @@ class signupFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.back_btn -> {navController.popBackStack()}
-            R.id.signup_btn -> {createAccount(email.text, password.text)}
+            R.id.signup_btn -> {createAccount(email.text.toString(), password.text.toString())}
         }
     }
 
 
-    private fun createAccount(email: Editable, password: Editable) {
-        val em = email.toString()
-        val pwd = password.toString()
+    private fun createAccount(email: String, password: String) {
 
         if (email.isNotEmpty() && password.isNotEmpty()) {
-            auth?.createUserWithEmailAndPassword(em, pwd)
+            auth?.createUserWithEmailAndPassword(email, password)
                 ?.addOnCompleteListener{ task ->
                     if (task.isSuccessful) {
                         Toast.makeText(activity, resources.getString(R.string.account_success), Toast.LENGTH_SHORT).show()

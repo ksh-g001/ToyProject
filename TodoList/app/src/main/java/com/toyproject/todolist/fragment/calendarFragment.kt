@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.fragment_calendar.*
  */
 class calendarFragment : Fragment(), View.OnClickListener {
 
-    lateinit var navController: NavController
+    private lateinit var navController: NavController
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {

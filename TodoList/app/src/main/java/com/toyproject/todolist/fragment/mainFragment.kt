@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.fragment_main.*
  */
 class mainFragment : Fragment(), View.OnClickListener {
 
-    lateinit var navController: NavController
+    private lateinit var navController: NavController
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
