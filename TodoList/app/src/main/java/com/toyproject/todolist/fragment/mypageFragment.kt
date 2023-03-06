@@ -1,29 +1,29 @@
 package com.toyproject.todolist.fragment
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.toyproject.todolist.R
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_mypage.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.LinkedList
 
-/**
- * A simple [Fragment] subclass.
- * Use the [MainFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+
 class mypageFragment : Fragment(), View.OnClickListener {
 
     private lateinit var navController: NavController
@@ -32,6 +32,7 @@ class mypageFragment : Fragment(), View.OnClickListener {
     private lateinit var sKey : String
     private lateinit var auth :FirebaseAuth
     private lateinit var date : String
+    private lateinit var time : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +41,8 @@ class mypageFragment : Fragment(), View.OnClickListener {
         database = Firebase.database("https://todo-list-e6634-default-rtdb.asia-southeast1.firebasedatabase.app/")
         sKey = auth.currentUser!!.uid
         date = setDate()
-        databaseReference = database.reference.child("Users")
+        time = setTime()
+        databaseReference = database.reference.child("Users").child(sKey)
     }
 
     override fun onCreateView(
@@ -53,6 +55,11 @@ class mypageFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val item = readData()
+        Toast.makeText(activity, "item size : ${item.size}", Toast.LENGTH_SHORT).show()
+        todoList.adapter =
+            activity?.let { ArrayAdapter(it, android.R.layout.simple_list_item_1, item) }
 
         today_date.text = date
 
@@ -76,5 +83,56 @@ class mypageFragment : Fragment(), View.OnClickListener {
         val today = LocalDateTime.now()
         val sdf = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         return today.format(sdf)
+    }
+
+    private fun setTime() : String {
+        val current = LocalDateTime.now()
+        val sdf = DateTimeFormatter.ofPattern("h:mm:ss")
+        return current.format(sdf)
+    }
+
+    private fun readData() : ArrayList<String>{
+        var data: ArrayList<String> = ArrayList()
+
+        val dbReference = databaseReference.child(date)
+        dbReference.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (postSnapshot in dataSnapshot.children) {
+                    data.add(postSnapshot.child("title").getValue<String>().toString())
+
+//                    Log.w(TAG, "postSnapshot.children : ${postSnapshot.child("title").children}")
+                }
+                Toast.makeText(activity, "데이터 읽음", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w(TAG, "loadPost:onCancelled")
+                Toast.makeText(activity, resources.getString(R.string.read_false), Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        return data
+    }
+
+    private fun countData() :Int {
+        val dbReference =  databaseReference.child(date)
+        var cnt = 1
+
+        dbReference.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (postSnapshot in dataSnapshot.children) {
+                    cnt++
+                }
+                cnt /= 2
+                Log.w(TAG, "cnt : $cnt")
+                Toast.makeText(activity, "cnt : $cnt", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.w(TAG, "loadPost:onCancelled")
+            }
+        })
+
+        return cnt
     }
 }
