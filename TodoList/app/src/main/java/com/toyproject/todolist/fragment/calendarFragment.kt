@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.CalendarView
 import android.widget.Toast
 import com.toyproject.todolist.R
 import androidx.navigation.NavController
@@ -23,9 +22,12 @@ import kotlinx.android.synthetic.main.fragment_calendar.*
 import kotlinx.android.synthetic.main.fragment_calendar.add_btn
 import kotlinx.android.synthetic.main.fragment_calendar.mypage_btn
 import kotlinx.android.synthetic.main.fragment_calendar.option_btn
-import kotlinx.android.synthetic.main.fragment_mypage.*
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
+import java.time.Month
 import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.ArrayList
 
 class calendarFragment : Fragment(), View.OnClickListener {
 
@@ -59,12 +61,16 @@ class calendarFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val item = readData()
-        Toast.makeText(activity, "item size : ${item.size}", Toast.LENGTH_SHORT).show()
-        todoList.adapter =
-            activity?.let { ArrayAdapter(it, android.R.layout.simple_list_item_1, item) }
-
         navController = Navigation.findNavController(view)
+
+        calendar.setOnDateChangeListener { view, year, month, dayOfMonth ->
+            val date = "$year-${changeCalendarDateForm(month)}-${changeCalendarDateForm(dayOfMonth)}"
+            Toast.makeText(activity, "date : $date", Toast.LENGTH_SHORT).show()
+            val item = readData(date)
+            Toast.makeText(activity, "item size : ${item.size}", Toast.LENGTH_SHORT).show()
+            todidList.adapter =
+                activity?.let { ArrayAdapter(it, android.R.layout.simple_list_item_1, item) }
+        }
 
         back_btn.setOnClickListener(this)
         mypage_btn.setOnClickListener(this)
@@ -93,8 +99,24 @@ class calendarFragment : Fragment(), View.OnClickListener {
         return current.format(sdf)
     }
 
-    private fun readData() : ArrayList<String>{
-        var data: ArrayList<String> = ArrayList()
+    private fun changeCalendarDateForm(date: Int) : String {
+        return when(date){
+            1 -> "01"
+            2 -> "02"
+            3 -> "03"
+            4 -> "04"
+            5 -> "05"
+            6 -> "06"
+            7 -> "07"
+            8 -> "08"
+            9 -> "09"
+            else -> date.toString()
+        }
+
+    }
+
+    private fun readData(date : String) : ArrayList<String>{
+        val data: ArrayList<String> = ArrayList()
 
         val dbReference = databaseReference.child(date)
         dbReference.addValueEventListener(object : ValueEventListener {

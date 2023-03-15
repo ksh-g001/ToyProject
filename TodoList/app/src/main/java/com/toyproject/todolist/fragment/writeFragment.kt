@@ -1,29 +1,21 @@
 package com.toyproject.todolist.fragment
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.toyproject.todolist.R
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.fragment_mypage.*
+import com.toyproject.todolist.TodoContext
 import kotlinx.android.synthetic.main.fragment_write.*
 import kotlinx.android.synthetic.main.fragment_write.calendar_btn
 import kotlinx.android.synthetic.main.fragment_write.mypage_btn
@@ -86,8 +78,12 @@ class writeFragment : Fragment(), View.OnClickListener {
     }
 
     private fun writeData(title : String, context : String) {
-        databaseReference.child(date).child(time).child("title").setValue(title)
-        databaseReference.child(date).child(time).child("context").setValue(context)
+        val todo = TodoContext(title, context)
+
+//        databaseReference.child(date).child(time).child("title").setValue(title)
+//        databaseReference.child(date).child(time).child("context").setValue(context)
+
+        databaseReference.child(date).child(time).setValue(todo)
 
         Toast.makeText(activity, resources.getString(R.string.save_success), Toast.LENGTH_SHORT).show()
     }
@@ -102,26 +98,5 @@ class writeFragment : Fragment(), View.OnClickListener {
         val current = LocalDateTime.now()
         val sdf = DateTimeFormatter.ofPattern("hh:mm:ss")
         return current.format(sdf)
-    }
-
-    private fun countData() :Int {
-        val dbReference =  databaseReference.child(date)
-        var cnt = 1
-
-        dbReference.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (postSnapshot in dataSnapshot.children) {
-                    cnt++
-                }
-                Toast.makeText(activity, "cnt : $cnt", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.w(TAG, "loadPost:onCancelled")
-            }
-        })
-
-        Toast.makeText(activity, "$cnt", Toast.LENGTH_SHORT).show()
-        return cnt
     }
 }

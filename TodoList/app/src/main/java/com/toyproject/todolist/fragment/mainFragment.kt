@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import com.toyproject.todolist.R
 import androidx.navigation.NavController
 import androidx.navigation.Navigation

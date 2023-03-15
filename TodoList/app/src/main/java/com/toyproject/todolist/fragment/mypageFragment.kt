@@ -18,10 +18,11 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.toyproject.todolist.TodoContext
+import com.toyproject.todolist.TodoContextAdapter
 import kotlinx.android.synthetic.main.fragment_mypage.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.LinkedList
 
 
 class mypageFragment : Fragment(), View.OnClickListener {
@@ -58,8 +59,7 @@ class mypageFragment : Fragment(), View.OnClickListener {
 
         val item = readData()
         Toast.makeText(activity, "item size : ${item.size}", Toast.LENGTH_SHORT).show()
-        todoList.adapter =
-            activity?.let { ArrayAdapter(it, android.R.layout.simple_list_item_1, item) }
+        todoList.adapter = activity?.let { TodoContextAdapter(it, item) }
 
         today_date.text = date
 
@@ -91,18 +91,17 @@ class mypageFragment : Fragment(), View.OnClickListener {
         return current.format(sdf)
     }
 
-    private fun readData() : ArrayList<String>{
-        var data: ArrayList<String> = ArrayList()
+    private fun readData() : ArrayList<TodoContext>{
+        var data: ArrayList<TodoContext> = ArrayList()
 
         val dbReference = databaseReference.child(date)
         dbReference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (postSnapshot in dataSnapshot.children) {
-                    data.add(postSnapshot.child("title").getValue<String>().toString())
-
-//                    Log.w(TAG, "postSnapshot.children : ${postSnapshot.child("title").children}")
+//                    data.add(TodoContext(postSnapshot.child("title").getValue<String>(),postSnapshot.child("context").getValue<String>()))
+                    postSnapshot.getValue<TodoContext>()?.let { data.add(it) }
+                    Log.w(TAG, "postSnapshot.children : ${postSnapshot.child("title").children}")
                 }
-                Toast.makeText(activity, "데이터 읽음", Toast.LENGTH_SHORT).show()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -112,27 +111,5 @@ class mypageFragment : Fragment(), View.OnClickListener {
         })
 
         return data
-    }
-
-    private fun countData() :Int {
-        val dbReference =  databaseReference.child(date)
-        var cnt = 1
-
-        dbReference.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (postSnapshot in dataSnapshot.children) {
-                    cnt++
-                }
-                cnt /= 2
-                Log.w(TAG, "cnt : $cnt")
-                Toast.makeText(activity, "cnt : $cnt", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.w(TAG, "loadPost:onCancelled")
-            }
-        })
-
-        return cnt
     }
 }
