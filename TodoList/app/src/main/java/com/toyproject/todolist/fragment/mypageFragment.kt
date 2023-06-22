@@ -33,7 +33,7 @@ class mypageFragment : Fragment(), View.OnClickListener {
     private lateinit var sKey : String
     private lateinit var auth :FirebaseAuth
     private lateinit var date : String
-    private lateinit var time : String
+    private lateinit var item : ArrayList<TodoContext>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +42,6 @@ class mypageFragment : Fragment(), View.OnClickListener {
         database = Firebase.database("https://todo-list-e6634-default-rtdb.asia-southeast1.firebasedatabase.app/")
         sKey = auth.currentUser!!.uid
         date = setDate()
-        time = setTime()
         databaseReference = database.reference.child("Users").child(sKey)
     }
 
@@ -57,7 +56,7 @@ class mypageFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val item = readData()
+        item = readData()
         Toast.makeText(activity, "item size : ${item.size}", Toast.LENGTH_SHORT).show()
         todoList.adapter = activity?.let { TodoContextAdapter(it, item) }
 
@@ -85,12 +84,6 @@ class mypageFragment : Fragment(), View.OnClickListener {
         return today.format(sdf)
     }
 
-    private fun setTime() : String {
-        val current = LocalDateTime.now()
-        val sdf = DateTimeFormatter.ofPattern("h:mm:ss")
-        return current.format(sdf)
-    }
-
     private fun readData() : ArrayList<TodoContext>{
         var data: ArrayList<TodoContext> = ArrayList()
 
@@ -98,7 +91,6 @@ class mypageFragment : Fragment(), View.OnClickListener {
         dbReference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (postSnapshot in dataSnapshot.children) {
-//                    data.add(TodoContext(postSnapshot.child("title").getValue<String>(),postSnapshot.child("context").getValue<String>()))
                     postSnapshot.getValue<TodoContext>()?.let { data.add(it) }
                     Log.w(TAG, "postSnapshot.children : ${postSnapshot.child("title").children}")
                 }

@@ -18,10 +18,13 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.toyproject.todolist.TodoContext
+import com.toyproject.todolist.TodoContextAdapter
 import kotlinx.android.synthetic.main.fragment_calendar.*
 import kotlinx.android.synthetic.main.fragment_calendar.add_btn
 import kotlinx.android.synthetic.main.fragment_calendar.mypage_btn
 import kotlinx.android.synthetic.main.fragment_calendar.option_btn
+import kotlinx.android.synthetic.main.fragment_mypage.*
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.Month
@@ -50,6 +53,11 @@ class calendarFragment : Fragment(), View.OnClickListener {
         databaseReference = database.reference.child("Users").child(sKey)
     }
 
+    override fun onResume() {
+        super.onResume()
+        (todidList.adapter as TodoContextAdapter?)?.notifyDataSetChanged()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -64,12 +72,12 @@ class calendarFragment : Fragment(), View.OnClickListener {
         navController = Navigation.findNavController(view)
 
         calendar.setOnDateChangeListener { view, year, month, dayOfMonth ->
-            val date = "$year-${changeCalendarDateForm(month)}-${changeCalendarDateForm(dayOfMonth)}"
+            var date = "$year-${changeCalendarDateForm(month)}-${changeCalendarDateForm(dayOfMonth)}"
             Toast.makeText(activity, "date : $date", Toast.LENGTH_SHORT).show()
-            val item = readData(date)
+            var item = readData(date)
             Toast.makeText(activity, "item size : ${item.size}", Toast.LENGTH_SHORT).show()
-            todidList.adapter =
-                activity?.let { ArrayAdapter(it, android.R.layout.simple_list_item_1, item) }
+            todidList.adapter = activity?.let { TodoContextAdapter(it, item) }
+            (todidList.adapter as TodoContextAdapter?)?.notifyDataSetChanged()
         }
 
         back_btn.setOnClickListener(this)
@@ -115,17 +123,15 @@ class calendarFragment : Fragment(), View.OnClickListener {
 
     }
 
-    private fun readData(date : String) : ArrayList<String>{
-        val data: ArrayList<String> = ArrayList()
+    private fun readData(date : String) : ArrayList<TodoContext>{
+        var data: ArrayList<TodoContext> = ArrayList()
 
         val dbReference = databaseReference.child(date)
-        dbReference.addValueEventListener(object : ValueEventListener {
+        dbReference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for (postSnapshot in dataSnapshot.children) {
-                    data.add(postSnapshot.child("title").getValue<String>().toString())
-
-//                    Log.w(TAG, "postSnapshot.children : ${postSnapshot.child("title").children}")
-//                    Toast.makeText(activity, "postSnapshot.children : ${postSnapshot.child("title").getValue<String>().toString()}", Toast.LENGTH_SHORT).show()
+                    postSnapshot.getValue<TodoContext>()?.let { data.add(it) }
+                    Log.w(ContentValues.TAG, "postSnapshot.children : ${postSnapshot.child("title").children}")
                 }
             }
 
